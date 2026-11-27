@@ -2,23 +2,23 @@
 
 **Version:** 1
 **Locales:** `en`, `pt`
-**Status:** Proposed canonical contract
+**Status:** Canonical contract, implemented in runtime schemas
 
 ## 1. Shared conventions
 
 All content records must follow these conventions:
 
-| Field | Required | Convention |
-|---|---|---|
-| `id` | Yes | Stable, unique identifier shared across translations |
-| `locale` | Yes | `en` or `pt` |
-| `title` | Yes | Localized, non-empty title |
-| `summary` | Yes | Localized short description |
-| `status` | Yes | `draft`, `published`, or `archived` |
-| `category` | Yes | Lowercase kebab-case category |
-| `tags` | Yes | Array of lowercase kebab-case strings |
-| `createdAt` | Yes | ISO 8601 timestamp |
-| `updatedAt` | Yes | ISO 8601 timestamp |
+| Field       | Required | Convention                                           |
+| ----------- | -------- | ---------------------------------------------------- |
+| `id`        | Yes      | Stable, unique identifier shared across translations |
+| `locale`    | Yes      | `en` or `pt`                                         |
+| `title`     | Yes      | Localized, non-empty title                           |
+| `summary`   | Yes      | Localized short description                          |
+| `status`    | Yes      | `draft`, `published`, or `archived`                  |
+| `category`  | Yes      | Lowercase kebab-case category                        |
+| `tags`      | Yes      | Array of lowercase kebab-case strings                |
+| `createdAt` | Yes      | ISO 8601 timestamp                                   |
+| `updatedAt` | Yes      | ISO 8601 timestamp                                   |
 
 Additional conventions:
 
@@ -165,23 +165,55 @@ content/
 
 The workflow collection is a new addition to the existing layout.
 
-## 8. Validation expectations
+8. Validation expectations
 
-Future runtime validation must verify:
+Runtime validation is implemented using Zod schemas in lib/content/schemas.ts and content readers in lib/content.ts.
 
-1. Required fields and field types.
-2. Valid locale and enum values.
-3. Unique IDs within each content collection.
-4. Unique document slugs within each locale.
-5. Valid timestamps and non-empty required strings.
-6. Valid workflow step IDs and ordering.
-7. Translation parity for published records.
-8. Valid references between related records.
-9. No unexpected fields or embedded secrets.
+Currently enforced
 
-Validation implementation belongs to the subsequent typed-model and content-validation issues.
+Required fields and field types.
 
-## 9. Versioning and evolution
+Valid locale and enum values.
+
+Unique IDs within each loaded collection.
+
+Lowercase kebab-case document slugs and matching document filenames.
+
+ISO 8601 timestamps with explicit timezone offsets.
+
+Unique workflow step IDs within each workflow.
+
+Rejection of unexpected fields.
+
+Non-empty required strings.
+
+Content readers also:
+
+Return empty collections when collection files are missing.
+
+Return null when an individual document is missing.
+
+Reject malformed JSON with a file-specific validation error.
+
+Reject records whose locale does not match the requested collection.
+
+Reject duplicate content IDs within a collection.
+
+Not yet enforced
+
+The following integrity checks remain future work:
+
+Translation parity for published records.
+
+Valid references between related content records.
+
+Detection of embedded credentials, access tokens, and secrets.
+
+Global uniqueness of IDs across different content collections.
+
+These checks should be implemented alongside appropriate fixtures and tests before being treated as runtime guarantees.
+
+9. Versioning and evolution
 
 This document defines schema version 1.
 
