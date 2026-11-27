@@ -25,7 +25,7 @@ All content records must follow these shared metadata conventions.
 - IDs must be stable and unique within their content collection.
 - English and Portuguese translations of the same record must share an ID.
 - IDs must remain unchanged after publication.
-- Lowercase kebab-case is recommended for IDs. For example: `meta-campaign-launch`.
+- Lowercase kebab-case is recommended for IDs, for example `meta-campaign-launch`.
 - IDs should describe the content concept rather than its current title or translated wording.
 - Do not reuse an ID after a record is deleted or archived.
 - Workflow step IDs must be unique within their parent workflow.
@@ -53,7 +53,7 @@ Illustrative examples:
 - `automation`
 - `operations`
 
-These examples are not an exhaustive or formally enforced taxonomy. The repository's documented conventions should be consulted before introducing new categories.
+These examples are not an exhaustive or formally enforced taxonomy.
 
 ### 1.3 Tags
 
@@ -91,20 +91,20 @@ Governance conventions:
 - Changing a record's status must update `updatedAt`.
 - Public-facing consumers should display only published records unless a different policy is explicitly documented.
 
-**Runtime note:** The content readers validate status values but do not automatically filter records by status or enforce publication approval and translation readiness. These are content governance and consumer responsibilities.
+**Runtime note:** The content readers validate status values but do not automatically filter records by status or enforce publication approval and translation readiness.
 
 ### 1.5 Ownership and authorship
 
 Content responsibility and operational ownership are separate concepts.
 
 - Every content record should have a clearly identifiable maintainer responsible for its accuracy and lifecycle.
-- The optional document field `author` identifies the author or contributor. It does not, by itself, establish an ongoing maintenance responsibility.
+- The optional document field `author` identifies the author or contributor. It does not establish ongoing maintenance responsibility.
 - The optional document field `reviewedBy` identifies the person who last reviewed the document.
 - The optional document field `reviewedAt` records the time of that review.
 - Workflow step `owner` identifies who is responsible for that operational step: `human`, `agent`, or `system`.
 - Operational ownership does not grant repository permissions or authorize an agent to execute actions.
 
-The current shared metadata schema does not define a general-purpose `owner` field. Do not add undocumented ownership fields to content records. If a content type needs explicit maintainer metadata, document and implement that requirement through a deliberate schema change.
+The shared metadata schema does not define a general-purpose `owner` field. Do not add undocumented ownership fields to content records.
 
 ### 1.6 Timestamps
 
@@ -130,7 +130,7 @@ The current shared metadata schema does not define a general-purpose `owner` fie
 - Unknown fields must be rejected unless explicitly added to the canonical schema.
 - Content files must never contain credentials, access tokens, or secrets.
 - Optional metadata should be omitted when it does not apply rather than populated with meaningless placeholder values.
-- New metadata conventions must be reflected in this document and, when applicable, in the runtime schemas and tests.
+- New metadata conventions must be reflected in this document and, when applicable, in runtime schemas and tests.
 
 ## 2. Documents
 
@@ -203,6 +203,95 @@ Optional fields:
 
 Rules should be explicit, independently identifiable, and understandable without relying on another rule for their meaning.
 
+### 4.1 Rule classification
+
+Use the existing shared `category` field to classify the primary subject of an operational rule.
+
+Conventions:
+
+- Categories must use lowercase kebab-case.
+- Each rule should have one primary category.
+- Prefer existing categories over creating near-duplicates.
+- Use tags for secondary topics and context.
+- Categories must have the same meaning in English and Portuguese content.
+
+Possible category examples include:
+
+- `security`
+- `data-protection`
+- `quality-assurance`
+- `campaign-management`
+- `tracking`
+- `compliance`
+
+These examples are illustrative, not an exhaustive or runtime-enforced enum. New categories should be reviewed by the content maintainer.
+
+### 4.2 Severity and enforcement
+
+Severity and enforcement describe different aspects of a rule and must not be treated as interchangeable.
+
+| Field         | Values                              | Meaning                                       |
+| ------------- | ----------------------------------- | --------------------------------------------- |
+| `severity`    | `low`, `medium`, `high`, `critical` | Impact or risk associated with non-compliance |
+| `enforcement` | `must`, `should`, `may`             | Normative strength of the rule                |
+
+Use enforcement consistently:
+
+- `must`: mandatory requirement.
+- `should`: recommended practice; deviations require justification.
+- `may`: permitted or optional behavior.
+
+A high severity does not automatically change a rule's enforcement level. Both fields should reflect the intended policy.
+
+### 4.3 Strict rules
+
+Rules using `must` establish mandatory requirements within their stated scope.
+
+- They must use clear, unambiguous language.
+- They should identify the affected systems, teams, or workflows.
+- They should explain the reason for the requirement.
+- They must not be weakened by a lower-priority recommendation.
+- Any permitted deviation must follow the documented exception process.
+
+Legal, security, and safety requirements must not be overridden by ordinary operational preferences.
+
+### 4.4 Exceptions
+
+Exceptions document approved deviations from an existing rule.
+
+Conventions:
+
+- Identify the rule affected.
+- Explain the reason for the exception.
+- Identify the approving authority.
+- Record the applicable scope.
+- Include a review date or expiry condition.
+- Keep the exception limited to what was approved.
+- Reassess exceptions when the underlying rule or circumstances change.
+
+An exception must not be interpreted as a permanent change to the original rule.
+
+**Runtime note:** The current `exceptions` field is an optional array of non-empty strings. The approval and review details above are documentation conventions; the runtime schema does not validate them as structured fields.
+
+### 4.5 Rule precedence and contradictions
+
+When rules appear to conflict, apply these principles:
+
+1. Applicable legal, security, and safety requirements take priority over ordinary operational preferences.
+2. An explicitly approved exception applies only within its documented scope and approval.
+3. A more specific rule takes precedence over a general rule when both address the same issue and no higher-priority requirement is violated.
+4. A `should` or `may` rule must not be used to override an applicable `must` requirement.
+5. If two applicable mandatory rules remain contradictory, do not choose one arbitrarily. Escalate the conflict for human review and document the resolution.
+
+Rule authors should:
+
+- Check related rules before introducing a new one.
+- Avoid duplicating requirements with different wording.
+- Reference related rules where useful.
+- Update affected rules when a contradiction is resolved.
+
+**Runtime note:** Rule precedence, exception approval, and contradiction detection are governance processes. They are not currently enforced by the Zod schema or content readers.
+
 ## 5. Workflow blueprints
 
 **Storage:** `content/workflows/{locale}.json`
@@ -270,8 +359,6 @@ content/
     └── pt.json
 ```
 
-The workflow collection is part of the canonical content architecture.
-
 Document records are stored individually by locale and slug. Agent, rule, and workflow records are stored as locale-specific collections.
 
 ## 8. Validation expectations
@@ -307,9 +394,12 @@ The following integrity checks remain future work:
 - Valid references between related content records.
 - Detection of embedded credentials, access tokens, and secrets.
 - Global uniqueness of IDs across different content collections.
-- A mandatory lowercase kebab-case format for content IDs.
+- Mandatory lowercase kebab-case formatting for content IDs.
 - Automatic filtering of records by publication status.
 - Ownership or maintainer metadata across all content types.
+- Rule category validation against an approved taxonomy.
+- Rule precedence and contradiction detection.
+- Structured validation of exception approval and review details.
 
 These checks should be implemented alongside appropriate fixtures and tests before being treated as runtime guarantees.
 
