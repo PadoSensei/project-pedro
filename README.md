@@ -1,37 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pedro Operations & Agents Hub
 
-## Getting Started
+A bilingual (English / Portuguese) Next.js application serving as the Single Source of Truth (SSOT) for **Project Pedro**. This repository houses Pedro's paid media workflows (Google Ads, Meta Ads, GTM), operational rules, and the blueprint registry for future AI agents and automations.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🎯 Project Goals
+
+1. **Centralize Documentation:** Replace scattered Claude chats and client spreadsheets with version-controlled, clean local documentation (the "Fichas" and Rules).
+2. **Bilingual Support:** Full support for English (`en`) and Portuguese (`pt`) workflows.
+3. **Agent & Automation Blueprint:** Clearly define inputs, outputs, tech stack, and autonomy levels for every repetitive task so they can be systematically automated or handed off to AI agents.
+4. **Local-First Architecture:** All docs, rules, and agent definitions live directly in the repository under `/content`, minimizing external database dependencies for the documentation phase.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 15 (App Router, Server Components)
+- **Styling:** Tailwind CSS + Radix UI primitives
+- **Localization:** `next-intl` (URL-based routing: `/en/...` and `/pt/...`)
+- **Icons:** `lucide-react`
+- **Data Source:** Local static JSON files stored in `/content`
+- **Package Manager:** `pnpm`
+
+---
+
+## 📁 Repository Structure
+
+```text
+├── content/                     # SSOT for documentation, agents, and rules
+│   ├── agents/                  # AI Agents & Automation registries (en.json, pt.json)
+│   ├── docs/                    # Workflow Fichas organized by locale (en/ and pt/)
+│   └── rules/                   # SMKT Strict Rules and Contradiction matrices
+├── src/
+│   ├── app/                     # Next.js App Router (bilingual [locale] routes)
+│   ├── components/              # Reusable UI components (AgentCard, etc.)
+│   └── lib/                     # Content readers and utility functions
+├── i18n/                        # Internationalization routing config
+└── messages/                    # UI translation strings (en.json, pt.json)
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# project-pedro
