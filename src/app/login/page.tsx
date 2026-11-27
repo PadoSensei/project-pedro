@@ -22,7 +22,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-md border">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">SMKT Docs & Agents</h1>
+          <h1 className="text-2xl font-bold">Project Pedro</h1>
           <p className="text-sm text-slate-500 mt-1">
             Acesso restrito à equipe
           </p>
